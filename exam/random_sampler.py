@@ -10,6 +10,7 @@ def rejection_sampling(func: Callable[[np.array], np.array],
                        boundary_conditions: Callable[[np.array], np.array],
                        n_samples: int,
                        random_generator,
+                       return_rejected=False,
                        sampling_batch_size=256):
     """
     Generate samples from a function using rejection sampling
@@ -21,6 +22,8 @@ def rejection_sampling(func: Callable[[np.array], np.array],
                                 of boolean values of shape (n_samples, 1)
     :param n_samples: number of samples to generate
     :param random_generator: random generator
+    :param return_rejected: if True, return the rejected samples as well. If enabled ignores n_samples and
+                            returns all the sampled elements
     :param sampling_batch_size: number of samples to generate in each batch
     :return: array of samples with shape (n_samples, n)
     """
@@ -40,8 +43,8 @@ def rejection_sampling(func: Callable[[np.array], np.array],
         # Calculate the function value at the sampled points
         return x, func(x), v
 
-    # Create array with all the sampled batches
-    samples = []
+    # Create array with all the accepted samples
+    accepted, rejected = [], []
 
     # While we haven't collected enough samples
     samples_generated = 0
@@ -50,14 +53,22 @@ def rejection_sampling(func: Callable[[np.array], np.array],
         x, fx, v = sample_batch()
 
         # Filter out invalid samples
-        valid_samples = x[(v * fx_max < fx) & boundary_conditions(x)]
+        accepted_filter = (v * fx_max < fx) & boundary_conditions(x)
+        valid_samples = x[accepted_filter]
 
         # Add the valid samples to the array
         samples_generated += len(valid_samples)
-        samples.append(valid_samples)
+        accepted.append(valid_samples)
+
+        # Add the invalid samples to the array
+        if return_rejected:
+            rejected.append(x[~accepted_filter])
 
     # Concatenate all the batches into a single array
-    return np.concatenate(samples)[:n_samples]
+    if return_rejected:
+        return accepted, rejected
+
+    return np.concatenate(accepted)[:n_samples]
 
 
 # %%
