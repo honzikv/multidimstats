@@ -34,6 +34,9 @@ def rejection_sampling(func: Callable[[np.array], np.array],
         # Generate vectors u, v with uniform random numbers in (0, 1)
         # I.e. we get a vector form of u_i ~ U(0, 1) for each dim i
         u = random_generator.uniform(size=(batch_size, x_dim))
+
+        # Generate a vector of random numbers in (0, 1) for each sample
+        # This represents the function value scale factor at the sampled point
         v = random_generator.uniform(0, 1, batch_size)
 
         # Scale the vectors u, v to the bounds of the function
@@ -104,5 +107,9 @@ samples = rejection_sampling(
 
 # Compute mean for x1
 print(f'Mean for x1: {np.mean(samples[:, 0])}')
+print(f'Mean for x2: {np.mean(samples[:, 1])}')
+print(f'Variance for x1: {np.var(samples[:, 0])}')
+print(f'Variance for x2: {np.var(samples[:, 1])}')
+print(f'Covariance: {np.cov(samples[:, 0], samples[:, 1])}')
 
 # %%
