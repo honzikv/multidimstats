@@ -89,7 +89,7 @@ bounds_end = np.array([[2, 2]])  # x <= 2 and y <= 2
 fx_max = f(bounds_end).item()  # Maximum value of the function in the bounds
 
 # Number of samples to generate
-n_samples = 1000_000
+n_samples = 1_000_000
 
 # Random generator
 random_generator = np.random.default_rng(seed=420)
