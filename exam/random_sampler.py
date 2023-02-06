@@ -56,7 +56,7 @@ def rejection_sampling(func: Callable[[np.array], np.array],
         x, fx, v = sample_batch()
 
         # Filter out invalid samples
-        accepted_filter = (v * fx_max < fx) & boundary_conditions(x)
+        accepted_filter = ((v * fx_max) < fx) & boundary_conditions(x)
         valid_samples = x[accepted_filter]
 
         # Add the valid samples to the array
@@ -77,13 +77,13 @@ def rejection_sampling(func: Callable[[np.array], np.array],
 # %%
 
 # Define the function to sample and its conditions
-f = lambda x: 8 / 9 * x[:, 0] * x[:, 1]
-f_conditions = lambda x: x[:, 0] < x[:, 1]
+f = lambda x: 1 / 14 * x[:, 0] * (x[:, 0] + x[:, 1])  # f(x, y) = 1/14 * x (x + y)
+f_conditions = lambda x: x[:, 0] < x[:, 1]  # x < y
 
 # Define the bounds of the function
 # Bounds must be a 2D array with shape (1, n)
 bounds_start = np.array([[1, 1]])  # x >= 1 and y >= 1
-bounds_end = np.array([[2, 2]])  # x <= 2 and y <= 2
+bounds_end = np.array([[3, 3]])  # x <= 2 and y <= 2
 
 # Calculate the maximum value of the function in the bounds
 fx_max = f(bounds_end).item()  # Maximum value of the function in the bounds
